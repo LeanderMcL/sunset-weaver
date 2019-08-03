@@ -1,0 +1,69 @@
+IN PROGRESS
+
+RESPONSIVENESS: Make the site size itself according to screen size (this basically works, but needs tweaking)
+** next job with this is to make the text responsive and display at a reasonable size based on screen
+resolution
+** job after that is to tweak the image size depending on screen resolution so they look good on any screen
+
+PRIORITIES
+
+1. Bug fixes
+2. Refactoring for better efficiency/readability/etc
+3. Implementing new ideas and plans
+
+
+BUGS
+
+NO NOTICEABLE BUGS O.O
+
+REFACTOR JOB:
+
+1. ADJACENTSQUARES
+** Figure out where to call adjacentSquares only ONCE (or a handful of times) so I can pass the array around 
+rather than computing it over and over
+** Idea: compute this when I fill the grid, appending the object as a property of each square
+** This might make filling the grid a bit slower, but will mean I can then just access the property when I 
+need it
+
+2. LEVEL OBJECTS
+** This is prep for building different levels
+** I want a "level" object that contains all the properties: pictures, colours and scores for each value
+** this way instead of passing around my various dictionaries, I can pass in a "level" object that contains
+all the information needed to build a single level
+** probably the grid size, too
+
+IDEAS
+
+LEVELS: set a specific grid size and set of score values for a level
+SCORE TARGETS: set a score target for each level
+MOVE TARGETS: set a maximum number of moves for each level
+TIME TARGETS: set a maximum time to complete for each level
+PIECE TARGETS: set a number of a selection of pieces to clear for each level
+MOVE KINDNESS: set a level of difficulty, which will determine the likelihood of a new set of pieces offering a move
+MOVE DETECTION: detect when there are no more moves available
+GENERATE BOARDS WITH MOVES: be able to generate boards with a minimum number of moves available
+DRAGGING: make moves by dragging as well as clicking
+HINTS: Hint at a random move after a given amount of time
+SPECIAL SQUARES: bombs, row-clearers, etc
+HIGH SCORES: personal, for your session, at least for now
+ANIMATION: More complex fill-down animation so you can see the tiles drop
+
+UP AND WORKING
+
+MATCH DETECTION: Tell when there are matches on the board
+GAME OVER: Detect and respond when there are no more available moves
+MATCHLESS STARTING BOARD: No more free matches when the game begins
+CLICK BEHAVIOUR: Respond to clicks on the board
+RESTART: A restart button that resets the level score but not the total score
+
+BUGS FIXED
+1. PICTURE ID BUG
+** sometimes after I make matches, one or more picture IDs are messed up, which breaks clicking
+** this is NOT a refill bug, this is happening sometime BEFORE refilling happens, but after the first fill
+** current job: interrogate whether this is happening when squares are emptied, though I see no reason it 
+should
+2. GRID ALIGNMENT BUG
+** something funky is happening when squares are emptied that is throwing off my grid - why and how?
+3. MOBILE DISPLAY BUG
+** responsiveness is not working on portrait-aligned phones
+
