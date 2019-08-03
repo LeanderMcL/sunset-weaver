@@ -50,8 +50,13 @@ h3 {
 
 .gameDiv {
   background-color: lightcyan;
+  z-index: 1000;
 }
 
 .scoreDiv {
   background-color: lightcyan;
+}
+
+.glitchButton {
+  z-index: 500;
 }
