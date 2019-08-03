@@ -54,6 +54,8 @@ const gameTitle = 'Match Me If You Can!';
 const gameSubTitle = 'Swap tiles, make matches of 3 or more, score points';
 const headerLinks = [["index.html","play!"],["dev-news.html","dev news"],["about.html","about"]];
 
+const glitchButton = '<div class="glitchButton" style="position:fixed;top:20px;right:20px;"></div><script src="https://button.glitch.me/button.js"></script>';
+
 // note: later on we'll dynamically generate the size of the grid depending on what level we're playing? but that's for way later
 // for now this is a static 8x8 grid
 
@@ -70,7 +72,7 @@ setElementVal('hello','<img src="https://cdn.glitch.com/39da33ca-b9bc-4d91-87ff-
 
 // --- RUN THE GAME ---
 
-const screen = generateScreen(gameTitle,gameSubTitle,headerLinks);
+const screen = generateScreen(gameTitle,gameSubTitle,headerLinks,glitchButton);
 const grid = runGame(gridSize,squareValues,squareScores,squarePics,gameStatus);
 
 /*const testLink = buildLinkTag("dev-news.html","dev news");
@@ -91,17 +93,17 @@ console.log(setPicId(0));*/
 // note: makeGrid is going to change hugely once I set up matching
 
 // generates a responsive screen
-function generateScreen(title,subTitle,headLinks) {
+function generateScreen(title,subTitle,headLinks,button) {
   const screenHeight = window.innerHeight;
   const screenWidth = window.innerWidth;
   if (screenWidth > screenHeight) {
-    generateLandscapeScreen(screenHeight,screenWidth,title,subTitle,headLinks);
+    generateLandscapeScreen(screenHeight,screenWidth,title,subTitle,headLinks,button);
   } else {
-    generatePortraitScreen(screenHeight,screenWidth,title,subTitle,headLinks);
+    generatePortraitScreen(screenHeight,screenWidth,title,subTitle,headLinks,button);
   }
 }
 
-function generateLandscapeScreen(h,w,title,subTitle,headLinks) {
+function generateLandscapeScreen(h,w,title,subTitle,headLinks,button) {
   const headerHeight = Math.floor(h * 0.08);
   const titleHeight = Math.floor(h * 0.15);
   makeHeader(headerHeight,w,headLinks);
@@ -128,11 +130,11 @@ function generateLandscapeScreen(h,w,title,subTitle,headLinks) {
   setElementVal('gameSubTitle',subTitle);
 }
 
-function generatePortraitScreen(h,w,title,subTitle,headLinks) {
+function generatePortraitScreen(h,w,title,subTitle,headLinks,button) {
   // code goes here
   const headerHeight = Math.floor(h * 0.05);
   const titleHeight = Math.floor(h * 0.075);
-  makeHeader(headerHeight,w,headLinks);
+  makeHeader(headerHeight,w,headLinks,button);
   const titleDiv = createDiv('titleDiv','titleDiv',titleHeight,w);
   appendElement(titleDiv);
   positionElement('titleDiv',0,headerHeight);
@@ -156,7 +158,8 @@ function generatePortraitScreen(h,w,title,subTitle,headLinks) {
   setElementVal('gameSubTitle',subTitle);
 }
 
-function makeHeader(h,w,l) {
+function makeHeader(h,w,l,button) {
+  console.log(button);
   const headerDiv = createDiv('headerDiv','headerDiv',h,w);
   appendElement(headerDiv);
   const headerLinks = makeHeaderLinks(l);
@@ -164,6 +167,7 @@ function makeHeader(h,w,l) {
   for (let i = 0; i < headerLinks.length; i++) {
     headerContent = headerContent + " " + headerLinks[i];
   }
+  headerContent = headerContent + button;
   setElementVal('headerDiv',headerContent);
   positionElement('headerDiv',0,0);
 }
