@@ -1,0 +1,57 @@
+/* CSS files add styling rules to your content */
+
+body {
+  font-family: "Benton Sans", "Helvetica Neue", helvetica, arial, sans-serif;
+  background-color: honeydew;
+  color: saddlebrown;
+  margin: 2em;
+}
+
+a:link {
+  color: blueviolet;
+}
+
+a:visited {
+  color: darkgreen;
+}
+
+h1 {
+  text-align: center;
+  color: saddlebrown;
+}
+
+h2 {
+  text-align: center;
+  color: saddlebrown;
+}
+
+h3 {
+  text-align: center;
+  color: saddlebrown;
+}
+
+.square {
+  display: inline-block;
+  border-style: solid;
+  border-color: grey;
+  margin: 0px;
+}
+
+.headerDiv {
+  background-color: lightcyan;
+  margin: 0px;
+  border: 5px;
+  border-color: black;
+}
+
+.titleDiv {
+  background-color: lightsalmon;
+}
+
+.gameDiv {
+  background-color: lightcyan;
+}
+
+.scoreDiv {
+  background-color: lightcyan;
+}

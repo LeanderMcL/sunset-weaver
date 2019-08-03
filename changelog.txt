@@ -1,0 +1,2 @@
+03/08/19 -- Fixed the restart button to handle picDict
+03/08/19 -- Responsiveness: added portrait and landscape screens
