@@ -14,7 +14,12 @@ PRIORITIES
 
 BUGS
 
-NO NOTICEABLE BUGS O.O
+1. SCORING BUG: Because of problems with how I'm doing matching, I'm assigning way too many points
+** I'm supposed to be creating a nest of matches that only contains each list of matches once
+** BUT they're coming through once for each square in the match
+** this is probably a problem with the function that creates dupeless nests, in that it doesn't do that?
+** so that's probably priority one for tomorrow: get scoring right!
+2. RESTARTING BUG: The GAME OVER div doesn't vanish when you reset the game and it should!
 
 REFACTOR JOB:
 
@@ -66,4 +71,28 @@ should
 ** something funky is happening when squares are emptied that is throwing off my grid - why and how?
 3. MOBILE DISPLAY BUG
 ** responsiveness is not working on portrait-aligned phones
+
+LEVEL OBJECT THOUGHT
+
+Basically I need a thing that does this?
+
+level {
+  size: grid size goes here,
+  squares:
+    name: {
+      name: name,
+      colour: colour,
+      picture: picture,
+      score: score,
+    }
+    name2: {
+      name: name,
+      colour: colour,
+      picture: picture,
+      score: score,
+    }
+    name3: {
+      etc...
+    }
+}
 
