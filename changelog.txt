@@ -1,3 +1,5 @@
+04/08/19 -- Some updates to the About and Dev News pages 
+04/08/19 -- Removed the Game Over notice when the game restarts
 03/08/19 -- Replaced the Glitch button
 03/08/19 -- Fixed the restart button to handle picDict
 03/08/19 -- Responsiveness: added portrait and landscape screens
