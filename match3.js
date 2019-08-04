@@ -69,7 +69,7 @@ const glitchButton = '<div class="glitchButton" style="position:fixed;top:20px;r
 
 const gridSize = 8;
 
-const gameStatus = working;
+const gameStatus = testing;
 
 /*const img = createImage('hi','hello','https://cdn.glitch.com/39da33ca-b9bc-4d91-87ff-6edf9dfb13fb%2Farmored-pants.png?1533503109479',45,45);
 
@@ -82,6 +82,7 @@ setElementVal('hello','<img src="https://cdn.glitch.com/39da33ca-b9bc-4d91-87ff-
 
 const screen = generateScreen(gameTitle,gameSubTitle,headerLinks,glitchButton);
 const grid = runGame(gridSize,squareValues,squareScores,squarePics,gameStatus);
+
 
 /*const testLink = buildLinkTag("dev-news.html","dev news");
 console.log(testLink);*/
@@ -1076,7 +1077,8 @@ function squareMatch(id,size) {
 function horizontalMatch(id,size) {
   let match = false;
   const matched = twoSquareMatch(id,size);
-  let matches = []
+  let matches = [];
+  let numericMatches = [];
     if (matched) {
     if ('left' in matched && 'right' in matched) {
       match = true;
@@ -1095,7 +1097,9 @@ function horizontalMatch(id,size) {
         }
       }
       // order and return
-      matches = numericSort(matches);
+      numericMatches = numericList(matches); // switch to numeric IDs so sorting works
+      numericMatches = numericSort(numericMatches);
+      matches = squareIdList(numericMatches); // switch back
       return matches
     } else if ('left' in matched) {
       match = true;
@@ -1106,7 +1110,9 @@ function horizontalMatch(id,size) {
         matches.push(leftMatch[i]);
       }
       // order and return
-      matches = numericSort(matches);
+      numericMatches = numericList(matches); // switch to numeric IDs so sorting works
+      numericMatches = numericSort(numericMatches);
+      matches = squareIdList(numericMatches); // switch back
       return matches;
     } else if ('right' in matched) {
        match = true;
@@ -1117,7 +1123,9 @@ function horizontalMatch(id,size) {
          matches.push(rightMatch[i]);
        }
        // order and return
-       matches = numericSort(matches);
+       numericMatches = numericList(matches); // switch to numeric IDs so sorting works
+       numericMatches = numericSort(numericMatches);
+       matches = squareIdList(numericMatches); // switch back
        return matches;
     } 
   } else {
@@ -1130,7 +1138,8 @@ function horizontalMatch(id,size) {
 function verticalMatch(id,size) {
   let match = false;
   const matched = twoSquareMatch(id,size);
-  let matches = []
+  let matches = [];
+  let numericMatches = [];
   if (matched) {
     if ('above' in matched && 'below' in matched) {
       match = true;
@@ -1149,7 +1158,9 @@ function verticalMatch(id,size) {
         }
       }
       // order and return
-      matches = numericSort(matches);
+      numericMatches = numericList(matches); // switch to numeric IDs so sorting works
+      numericMatches = numericSort(numericMatches);
+      matches = squareIdList(numericMatches); // switch back
       return matches
     } else if ('above' in matched) {
       match = true;
@@ -1160,7 +1171,9 @@ function verticalMatch(id,size) {
         matches.push(aboveMatch[i]);
       }
       // order and return
-      matches = numericSort(matches);
+      numericMatches = numericList(matches); // switch to numeric IDs so sorting works
+      numericMatches = numericSort(numericMatches);
+      matches = squareIdList(numericMatches); // switch back
       return matches;
     } else if ('below' in matched) {
        match = true;
@@ -1171,7 +1184,9 @@ function verticalMatch(id,size) {
          matches.push(belowMatch[i]);
        }
        // order and return
-       matches = numericSort(matches);
+       numericMatches = numericList(matches); // switch to numeric IDs so sorting works
+       numericMatches = numericSort(numericMatches);
+       matches = squareIdList(numericMatches); // switch back
        return matches;
     } 
   } else {
@@ -1224,7 +1239,9 @@ function matchTwoToList(id,size) {
     for (let i = 0; i < matchKeys.length; i++) {
       let matchItem = matchKeys[i];
       let thisMatchList = [id,matchObj[matchItem]];
-      numericSort(thisMatchList);
+      let thisNumericMatchList = numericList(thisMatchList); // switch to numeric list so sorting works
+      thisNumericMatchList = numericSort(thisNumericMatchList);
+      thisMatchList = squareIdList(thisNumericMatchList); // switch back
       matchNest.push(thisMatchList);
     }
   }
@@ -1576,6 +1593,27 @@ function positionElement(id,left,top) {
 }
 
 // list operations
+
+// change all list items to numeric ID
+function numericList(l) {
+  for (let i = 0; i < l.length; i++) {
+    l[i] = getNumericId(l[i]);
+  }
+  return l;
+}
+
+function squareIdList(l) {
+  for (let i = 0; i < l.length; i++) {
+    l[i] = setSquareId(l[i]);
+  }
+  return l;
+}
+
+// sort by the alphabet
+function alphaSort(x) {
+  const y = x.sort();
+  return y;
+}
 
 // sort by numeric value
 function numericSort(x) {
