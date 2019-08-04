@@ -6,6 +6,8 @@ const elfhelm = 'https://cdn.glitch.com/39da33ca-b9bc-4d91-87ff-6edf9dfb13fb%2Fe
 const flame = 'https://cdn.glitch.com/39da33ca-b9bc-4d91-87ff-6edf9dfb13fb%2Fflame.png?1533504553944'
 const hoodedfig = 'https://cdn.glitch.com/39da33ca-b9bc-4d91-87ff-6edf9dfb13fb%2Fhooded-figure.png?1533504843794'
 const nautilus = 'https://cdn.glitch.com/39da33ca-b9bc-4d91-87ff-6edf9dfb13fb%2Fnautilus-shell.png?1533505042707'
+const pants = 'https://cdn.glitch.com/39da33ca-b9bc-4d91-87ff-6edf9dfb13fb%2Fthumbnails%2Farmored-pants.png?1533503109479'
+const oak = 'https://cdn.glitch.com/39da33ca-b9bc-4d91-87ff-6edf9dfb13fb%2Fthumbnails%2Fholy-oak.png?1564872022232'
 
 // ---SET UP THE PARAMETERS OF THE GRID---
 
@@ -19,6 +21,8 @@ const squareValues = {
   'D': 'darkorange',
   'E': 'darkseagreen',
   'F': 'purple',
+  'G': 'teal',
+  'H': 'forestgreen',
 }
 
 const squarePics = {
@@ -28,6 +32,8 @@ const squarePics = {
   'D': bindle,
   'E': nautilus,
   'F': elfhelm,
+  'G': pants,
+  'H': oak,
 }
 
 const squareScores = {
@@ -37,6 +43,8 @@ const squareScores = {
   'D': 4,
   'E': 5,
   'F': 6,
+  'G': 7,
+  'H': 8,
 }
 
 const startingTotalScore = 0;
@@ -588,6 +596,10 @@ function updateGameOver() {
   setElement('game over span','GAME OVER','red','white');
 }
 
+function updateGameNotOver() {
+  setElement('game over span','','saddlebrown','lightsalmon');
+}
+
 // --CLICKING--
 
 // turn on clicking
@@ -689,6 +701,7 @@ function handleRestart(event) {
   const scoreDict = grid.scores;
   const picDict = grid.pics;
   const newGrid = newBoard(size,valDict,scoreDict,picDict);
+  updateGameNotOver();
 }
 
 // getting and setting whether squares are clicked
@@ -1323,6 +1336,8 @@ async function runMatch(size,valDict,picDict,scoreDict) {
 
 // assign scores for a list of matches
 function assignScore(matchList,scoresDict) {
+  console.log("hit assign score");
+  console.log("matchList is", matchList);
   const scoreVal = getSquareVal(matchList[0]); // value of the first square in the list
   let score = scoresDict[scoreVal] * matchList.length;
   if (matchList.length === 4) {
@@ -1335,6 +1350,8 @@ function assignScore(matchList,scoresDict) {
 
 // assign scores for the entire nest of matches
 function assignTotalScore(matchNest,scoresDict) {
+  console.log("hit assign total score");
+  console.log("matchNest is", matchNest);
   let score = 0;
   for (let i = 0; i < matchNest.length; i++) {
     let addScore = assignScore(matchNest[i],scoresDict);
