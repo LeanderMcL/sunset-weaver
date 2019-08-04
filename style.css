@@ -30,6 +30,10 @@ h3 {
   color: saddlebrown;
 }
 
+h3.static {
+  text-align: left;
+}
+
 .square {
   display: inline-block;
   border-style: solid;
