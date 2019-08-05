@@ -112,7 +112,7 @@ function generateScreen(title,subTitle,headLinks,button) {
   }
 }
 
-function generateLandscapeScreen(h,w,title,subTitle,headLinks,button) {
+function generateLandscapeScreen(h,w,title,subTitle,headLinks) {
   const headerHeight = Math.floor(h * 0.08);
   const titleHeight = Math.floor(h * 0.15);
   makeHeader(headerHeight,w,headLinks);
@@ -139,10 +139,10 @@ function generateLandscapeScreen(h,w,title,subTitle,headLinks,button) {
   setElementVal('gameSubTitle',subTitle);
 }
 
-function generatePortraitScreen(h,w,title,subTitle,headLinks,button) {
+function generatePortraitScreen(h,w,title,subTitle,headLinks) {
   const headerHeight = Math.floor(h * 0.05);
   const titleHeight = Math.floor(h * 0.075);
-  makeHeader(headerHeight,w,headLinks,button);
+  makeHeader(headerHeight,w,headLinks);
   const titleDiv = createDiv('titleDiv','titleDiv',titleHeight,w);
   appendElement(titleDiv);
   positionElement('titleDiv',0,headerHeight);
