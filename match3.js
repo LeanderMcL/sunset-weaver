@@ -6,57 +6,38 @@ const elfhelm = 'https://cdn.glitch.com/39da33ca-b9bc-4d91-87ff-6edf9dfb13fb%2Fe
 const flame = 'https://cdn.glitch.com/39da33ca-b9bc-4d91-87ff-6edf9dfb13fb%2Fflame.png?1533504553944'
 const hoodedfig = 'https://cdn.glitch.com/39da33ca-b9bc-4d91-87ff-6edf9dfb13fb%2Fhooded-figure.png?1533504843794'
 const nautilus = 'https://cdn.glitch.com/39da33ca-b9bc-4d91-87ff-6edf9dfb13fb%2Fnautilus-shell.png?1533505042707'
-const pants = 'https://cdn.glitch.com/39da33ca-b9bc-4d91-87ff-6edf9dfb13fb%2Fthumbnails%2Farmored-pants.png?1533503109479'
-const oak = 'https://cdn.glitch.com/39da33ca-b9bc-4d91-87ff-6edf9dfb13fb%2Fthumbnails%2Fholy-oak.png?1564872022232'
+const pants = 'https://cdn.glitch.com/39da33ca-b9bc-4d91-87ff-6edf9dfb13fb%2Farmored-pants.png?v=1533503109479'
+const oak = 'https://cdn.glitch.com/39da33ca-b9bc-4d91-87ff-6edf9dfb13fb%2Fholy-oak.png?v=1564872022232'
 
 // ---SET UP THE PARAMETERS OF THE GRID---
 
-// note: later we'll try to generate this dynamically depending on what level we're playing
-// for now, six colours and six images
+// our starting level
 
-const squareValues = {
-  'A': 'crimson',
-  'B': 'darkturquoise',
-  'C': 'gold',
-  'D': 'darkorange',
-  'E': 'darkseagreen',
-  'F': 'purple',
-  'G': 'teal',
-  'H': 'forestgreen',
-}
+const level1 = makeLevel(8,[
+  ['flame', 'crimson', flame,1], 
+  ['carnyx', 'darkturquoise', carnyx, 2], 
+  ['hoodedfig', 'gold', hoodedfig, 3], 
+  ['bindle', 'darkorange', bindle, 4], 
+  ['nautilus', 'darkseagreen', nautilus, 5], 
+  ['elfhelm', 'purple', elfhelm, 6], 
+  ['pants', 'teal', pants, 7], 
+  ['oak', 'forestgreen', oak, 8]
+]);
 
-const squarePics = {
-  'A': flame,
-  'B': carnyx,
-  'C': hoodedfig,
-  'D': bindle,
-  'E': nautilus,
-  'F': elfhelm,
-  'G': pants,
-  'H': oak,
-}
-
-const squareScores = {
-  'A': 1,
-  'B': 2,
-  'C': 3,
-  'D': 4,
-  'E': 5,
-  'F': 6,
-  'G': 7,
-  'H': 8,
-}
-
+// scoring
 const startingTotalScore = 0;
 const startingLevelScore = 0;
 
 const currentTotalScore = 0;
 const currentLevelScore = 0;
 
+// game statuses
+
 const working = 'WORKING';
 const testing = 'In development - may not behave as expected';
 const broken = 'BROKEN';
-const special = 'Playable - working on the display bug'
+
+// display elements for the screen
 
 const gameTitle = 'Match Me If You Can!';
 const gameSubTitle = 'Swap tiles, make matches of 3 or more, score points';
@@ -69,12 +50,12 @@ const glitchButton = '<div class="glitchButton" style="position:fixed;top:20px;r
 
 const gridSize = 8;
 
-const gameStatus = testing;
+const gameStatus = working;
 
 // --- RUN THE GAME ---
 
-const screen = generateScreen(gameTitle,gameSubTitle,headerLinks,glitchButton);
-const grid = runGame(gridSize,squareValues,squareScores,squarePics,gameStatus);
+const screen = generateScreen(gameTitle,gameSubTitle,headerLinks);
+const grid = runGame(level1,gameStatus);
 
 // ---GENERATE THE BOARD---
 // note: makeGrid is going to change hugely once I set up matching
@@ -83,6 +64,7 @@ const grid = runGame(gridSize,squareValues,squareScores,squarePics,gameStatus);
 function generateScreen(title,subTitle,headLinks,button) {
   const screenHeight = window.innerHeight;
   const screenWidth = window.innerWidth;
+  // I want to change this up so we determine the screen size and do funky things based on that, but I need a lot of testing and investigation first!
   if (screenWidth > screenHeight) {
     generateLandscapeScreen(screenHeight,screenWidth,title,subTitle,headLinks,button);
   } else {
@@ -166,25 +148,26 @@ function makeHeaderLinks(l) {
   return links;
 }
 
-async function makeBoard(size,valDict,scoreDict,picDict) {
-  let grid = makeGrid(size,valDict,scoreDict,picDict);
+async function makeBoard(level) {
+  let grid = makeGrid(level);
+  const size = grid.level.size;
   if (testGameOver(size)) {
-    makeBoard(size,valDict,scoreDict);
+    makeBoard(level);
   }
   clickyGrid();
   return grid;
 }
 
-async function runGame(size,valDict,scoreDict,picDict,status) {
+async function runGame(level,status) {
   makeScoreBoard(status);
-  const grid = await makeBoard(size,valDict,scoreDict,picDict,status);
+  const grid = await makeBoard(level);
 }
 
 // --- TESTING ---
 // note: should probably set up some kind of automatic testing?
 
-async function runTest(size,valDict,scoreDict,status) {
-  const grid = await runGame(size,valDict,scoreDict,status);
+async function runTest(size,status) {
+  const grid = await runGame(size,status);
   // something should go here, not sure what yet
 }
 
@@ -196,7 +179,7 @@ async function runTest(size,valDict,scoreDict,status) {
 
 // generates a grid of squares
 // note: currently hardcoded for 60px squares; this could maybe be improved to vary with screen size?
-function makeGrid(size,valDict,scoreDict,picDict) {
+function makeGrid(level) {
   const gameDiv = getElement('gameDiv');
   const gameDivWidth = gameDiv.clientWidth;
   const gameDivHeight = gameDiv.clientHeight;
@@ -208,43 +191,45 @@ function makeGrid(size,valDict,scoreDict,picDict) {
   }
   const gridPosLeft = Math.floor((gameDivWidth - gridSize) / 2);
   const gridPosTop = Math.floor((gameDivHeight - gridSize) / 2);
-  const squareWidth = Math.floor(gridSize / size);
-  const w = squareWidth * size;
+  const squareWidth = Math.floor(gridSize / level.size);
+  const w = squareWidth * level.size;
   const grid = createDiv('grid','grid',w,w);
-  grid.size = size;
+  grid.level = level;
   grid.squSize = squareWidth;
   grid.picSize = Math.floor(squareWidth * 0.75); // to be determined based on screen size
   grid.isClicky = false;
-  grid.vals = valDict;
-  grid.scores = scoreDict;
-  grid.pics = picDict;
+  // okay we need to set this up a bit differently, let's just stick the squares as a property for now
   appendElement(grid,gameDiv);
   positionElement('grid',gridPosLeft,gridPosTop);
-  populateMatchlessGrid(grid,size,valDict,picDict);
+  populateMatchlessGrid(grid);
   return grid;
 }
 
 // populate the grid with matchless squares
-function populateMatchlessGrid(grid,size,valDict,picDict) {
-  const squareSize = grid.squSize;
-  const imgSize = grid.picSize;
-  for (let i = 0; i < size * size; i++) {
+function populateMatchlessGrid(grid) { // wait why are we passing all this through -- we can get all of this from accessing the grid! this should either just take grid as an argument or nothing at all
+  const squareSize = grid.squSize; // the size of each square in pixels
+  const imgSize = grid.picSize; // the size of each pic in pixels
+  const level = grid.level; // the dictionary of the square values, colours, pictures and scores
+  const gridSize = grid.level.size; // number of squares along a side in the grid (eg a 64-square grid is size 8)
+  const squares = grid.level.squares;
+  for (let i = 0; i < gridSize * gridSize; i++) {
     const squId = setSquareId(i);
-    const prevTwo = previousTwoMatch(squId,size);
+    const prevTwo = previousTwoMatch(squId,gridSize);
     let squareProps;
     if (prevTwo) {
       let prevTwoVals = objectVals(prevTwo);
-      squareProps = generateRestrictedSquare(valDict,picDict,prevTwoVals); // [value, colour, pic]
+      squareProps = generateRestrictedSquare(squares,prevTwoVals); // [value, colour, pic]
     } else {
-      squareProps = generateRandomSquare(valDict,picDict); // [value, colour, pic]
+      squareProps = generateRandomSquare(squares); // [value, colour, pic]
     }
+    // we really ought to pass this to some kind of square-maker function
     const squareVal = squareProps[0];
     const imgUrl = squareProps[2];
     const picId = setPicId(i);
     const squarePic = buildImgTag(imgUrl,imgSize,picId);
     const squareColour = squareProps[1];
     const square = makeSquare('',squId,squareSize);
-    const nextSquares = adjacentSquares(squId,size); //grab the adjacent squares for this square
+    const nextSquares = adjacentSquares(squId,gridSize); //grab the adjacent squares for this square
     square.val = squareVal;
     square.adjacent = nextSquares; //make the adjacent squares a property of the square
     appendElement(square,grid);
@@ -254,11 +239,11 @@ function populateMatchlessGrid(grid,size,valDict,picDict) {
 }
 
 // create a new board
-function newBoard(size,valDict,scoreDict,picDict) {
+function newBoard(level) {
   const oldGrid = getElement('grid');
   const gameDiv = getElement('gameDiv');
   gameDiv.removeChild(oldGrid);
-  const newGrid = makeBoard(size,valDict,scoreDict,picDict);
+  const newGrid = makeBoard(level);
 }
 
 // creates the scoreboard
@@ -340,25 +325,29 @@ function emptyGridLag(matchList,lag) {
 // refill the grid after matches
 
 // refills a particular square on the grid
-function squareRefill(id,size,valDict,picDict,picSize) {
+function squareRefill(id,size) {
+  const grid = getElement('grid');
+  const squares = grid.level.squares;
+  const picSize = grid.picSize;
   const idNo = getNumericId(id);
   const thisPicId = setPicId(idNo);
   if (getSquareVal(id) == '-') { // this square is empty
     // are there any empty squares above?
     const voidStack = recursiveMatch('above',id,size);
     let colourAbove;
+    // this could be refactored for easier readability - the colours above matter more, and this could be made more efficient by reversing the if tests? let's add a bug for this
     if (!voidStack) { // there are no empty squares above
       colourAbove = adjacentAbove(id,size);
       // now test if we have any colours above
       if (!colourAbove && colourAbove != 0) { // there are no colours above
-        let thisNewSquare = generateRandomSquare(valDict,picDict); // [value, colour, pic]
+        let thisNewSquare = generateRandomSquare(squares); // [value, colour, pic]
         let thisNewImgTag = buildImgTag(thisNewSquare[2],picSize,thisPicId);
         setElement(id,thisNewImgTag,thisNewSquare[1],thisNewSquare[1]); // set these to the existing square
         setSquareVal(id,thisNewSquare[0]);
       } else { // there are colours above, but no empty squares above, so we just need one
         let thisNewVal = getSquareVal(colourAbove);
-        let thisNewCol = valDict[thisNewVal];
-        let thisNewPic = picDict[thisNewVal];
+        let thisNewCol = squares[thisNewVal].colour;
+        let thisNewPic = squares[thisNewVal].picture;
         let thisNewImgTag = buildImgTag(thisNewPic,picSize,thisPicId)
         setElement(id,thisNewImgTag,thisNewCol,thisNewCol);
         setSquareVal(id,thisNewVal);
@@ -368,14 +357,14 @@ function squareRefill(id,size,valDict,picDict,picSize) {
       let lastVoid = voidStack[voidStack.length-1];
       colourAbove = adjacentAbove(voidStack[voidStack.length-1],size); // get the colours above the top of the empty squares
       if (!colourAbove && colourAbove != 0) { // no colours above, we can just fill in this square
-        let thisNewSquare = generateRandomSquare(valDict,picDict); // [value, colour, pic]
+        let thisNewSquare = generateRandomSquare(squares); // [value, colour, pic]
         let thisNewImgTag = buildImgTag(thisNewSquare[2],picSize,thisPicId);
         setElement(id,thisNewImgTag,thisNewSquare[1],thisNewSquare[1]);
         setSquareVal(id,thisNewSquare[0]);
       } else { // colours and empty squares above; fill this square with colourAbove
         let thisNewVal = getSquareVal(colourAbove);
-        let thisNewCol = valDict[thisNewVal];
-        let thisNewPic = picDict[thisNewVal];
+        let thisNewCol = squares[thisNewVal].colour;
+        let thisNewPic = squares[thisNewVal].picture;
         let thisNewImgTag = buildImgTag(thisNewPic,picSize,thisPicId);
         setElement(id,thisNewImgTag,thisNewCol,thisNewCol);
         setSquareVal(id,thisNewVal);
@@ -386,22 +375,22 @@ function squareRefill(id,size,valDict,picDict,picSize) {
 }
 
 // refills the entire grid
-function refillGrid(size,valDict,picDict) {
-  const grid = getElement("grid");
-  const picSize = grid.picSize;
+function refillGrid() { //nor here
+  const grid = getElement('grid');
+  const size = grid.level.size;
   const start = size*size-1;
   for (let i = start; i >= 0; i--) {
     const squId = setSquareId(i);
-    squareRefill(squId,size,valDict,picDict,picSize);
+    squareRefill(squId,size);
   }
   return true;
 }
 
 // refills the grid on a lag
-function refillGridLag(size,valDict,picDict,lag) {
+function refillGridLag(lag) { // not using them here either
   return new Promise(resolve => {
     setTimeout(() => {
-      resolve(refillGrid(size,valDict,picDict));
+      resolve(refillGrid());
     },lag);
   });
 }
@@ -510,7 +499,7 @@ function testGameOver(size) {
 
 function updateGameOver() {
   const grid = getElement('grid');
-  const size = grid.size;
+  const size = grid.level.size;
   unClickyGrid(size);
   setElement('game over span','GAME OVER','red','white');
 }
@@ -533,9 +522,7 @@ function clicky(id) {
 // adds click functionality to the grid
 function clickyGrid() {
   const grid = getElement('grid');
-  const size = grid.size;
-  const valDict = grid.vals;
-  const scoreDict = grid.scores;
+  const size = grid.level.size;
   for (let i = 0; i < size*size; i++) {
     const squId = setSquareId(i);
     clicky(squId);
@@ -571,10 +558,8 @@ async function handleClick(event) {
   const idNo = getNumericId(clicked.id);
   const squId = setSquareId(idNo);
   const grid = getElementParent(squId);
-  const size = grid.size;
-  const valDict = grid.vals;
-  const picDict = grid.pics;
-  const scoreDict = grid.scores;
+  const size = grid.level.size;
+  const squares = grid.level.squares;
   unClickyGrid(size);
   if (!squareIsClicked(squId)) {
     click(squId);
@@ -583,18 +568,18 @@ async function handleClick(event) {
     if (nextSquaresClicked) {
       const swapSquare = nextSquaresClicked[0];
       // now I need to swap squares which is probably its own function
-      const swapIn = await squareSwapLag(squId,swapSquare,valDict,picDict,500);
+      const swapIn = await squareSwapLag(squId,swapSquare,squares,500);
       const firstMatch = squareMatch(squId,size);
       const secondMatch = squareMatch(swapSquare,size);
       if (!firstMatch && !secondMatch) { // no matches is made by this swap
-        const swapBack = await squareSwapLag(squId,swapSquare,valDict,picDict,500);
+        const swapBack = await squareSwapLag(squId,swapSquare,squares,500);
         unClick(squId);
         unClick(swapSquare);
         clickyGrid();
       } else { // matches are made with swap
         unClick(squId);
         unClick(swapSquare);
-        const matchRun = await runMatch(size,valDict,picDict,scoreDict);
+        const matchRun = await runMatch(size);
         clickyGrid();
       }
       clearAllClicked(size);
@@ -615,11 +600,8 @@ async function handleClick(event) {
 function handleRestart(event) {
   resetLvlScore();
   const grid = getElement('grid');
-  const size = grid.size;
-  const valDict = grid.vals;
-  const scoreDict = grid.scores;
-  const picDict = grid.pics;
-  const newGrid = newBoard(size,valDict,scoreDict,picDict);
+  const level = grid.level; // for now, we're just restarting the same level as before - this will change once we have multiple levels
+  const newGrid = newBoard(level);
   updateGameNotOver();
 }
 
@@ -726,21 +708,21 @@ function clearAllClickedLag(size,lag) {
 
 // swap two squares
 // this is where we got done fixing stuff
-function squareSwap(id1,id2,valDict,picDict) {
+function squareSwap(id1,id2,squares) { // don't think we even need squares, we're accessing the grid anyway? probably best to minimise passing around, huh?
   const grid = getElement("grid");
   const picSize = grid.picSize;
   const idNo1 = getNumericId(id1);
   const idNo2 = getNumericId(id2);
   const val1 = getSquareVal(id1);
   const val2 = getSquareVal(id2);
-  const pic1 = picDict[val1];
-  const pic2 = picDict[val2];
+  const pic1 = squares[val1].picture;
+  const pic2 = squares[val2].picture;
   const picId1 = setPicId(idNo1);
   const picId2 = setPicId(idNo2);
   const imgTag1 = buildImgTag(pic1,picSize,picId2);
   const imgTag2 = buildImgTag(pic2,picSize,picId1);
-  const col1 = valDict[val1];
-  const col2 = valDict[val2];
+  const col1 = squares[val1].colour;
+  const col2 = squares[val2].colour;
   setElement(id1,imgTag2,col2,col2);
   setElement(id2,imgTag1,col1,col1);
   setSquareVal(id1,val2);
@@ -749,10 +731,10 @@ function squareSwap(id1,id2,valDict,picDict) {
 }
 
 // swap two squares on a lag
-function squareSwapLag(id1,id2,valDict,picDict,lag) {
+function squareSwapLag(id1,id2,squares,lag) {
   return new Promise(resolve => {
     setTimeout(() => {
-      resolve(squareSwap(id1,id2,valDict,picDict));
+      resolve(squareSwap(id1,id2,squares));
     },lag);
   });
 }
@@ -1239,33 +1221,33 @@ function gridMatch(size) {
 // responding to matches
 
 // handles scoring and refilling the grid after a match
-async function matchHandler(nest,matches,size,valDict,picDict,scoreDict) {
-  const score = assignTotalScore(nest,scoreDict);
+async function matchHandler(nest,matches) { // not using the dicts here either
+  const score = assignTotalScore(nest); // fix this shit up -- SCORING
   const lScore = Number(getElementVal('level score figure'));
   const tScore = Number(getElementVal('total score figure'));
   const makeEmptyGrid = await emptyGridLag(matches,500);
   updateScore(score,lScore,tScore);
-  const makeRefillGrid = await refillGridLag(size,valDict,picDict,500);
+  const makeRefillGrid = await refillGridLag(500);
   return true;
 }
 
 // handles matches on a lag
-function matchHandlerLag(nest,matches,size,valDict,picDict,scoreDict,lag) {
+function matchHandlerLag(nest,matches,lag) { // no need for the dicts at all
   return new Promise(resolve => {
     setTimeout(() => {
-      resolve(matchHandler(nest,matches,size,valDict,picDict,scoreDict));
+      resolve(matchHandler(nest,matches));
     },lag);
   });
 }
 
 // runs the entire matching process recursively
-async function runMatch(size,valDict,picDict,scoreDict) {
+async function runMatch(size) { // no need for this shit here
   const match = gridMatch(size);
   if (match) {
     const matchNest = match[0];
     const matchList = match[1];
-    const handledMatch = await(matchHandlerLag(matchNest,matchList,size,valDict,picDict,scoreDict,500));
-    const reRunMatch = await(runMatch(size,valDict,picDict,scoreDict));
+    const handledMatch = await(matchHandlerLag(matchNest,matchList,500));
+    const reRunMatch = await(runMatch(size));
   }
   if (testGameOver(size)) {
     updateGameOver();
@@ -1277,9 +1259,11 @@ async function runMatch(size,valDict,picDict,scoreDict) {
 ///--- SCORING ---
 
 // assign scores for a list of matches
-function assignScore(matchList,scoresDict) {
+function assignScore(matchList) {
+  const grid = getElement('grid');
+  const squares = grid.level.squares;
   const scoreVal = getSquareVal(matchList[0]); // value of the first square in the list
-  let score = scoresDict[scoreVal] * matchList.length;
+  let score = squares[scoreVal].score * matchList.length;
   if (matchList.length === 4) {
     score = score * 2;
   } else if (matchList.length >= 5) {
@@ -1289,10 +1273,10 @@ function assignScore(matchList,scoresDict) {
 }
 
 // assign scores for the entire nest of matches
-function assignTotalScore(matchNest,scoresDict) {
+function assignTotalScore(matchNest) {
   let score = 0;
   for (let i = 0; i < matchNest.length; i++) {
-    let addScore = assignScore(matchNest[i],scoresDict);
+    let addScore = assignScore(matchNest[i]);
     score = score + addScore;
   }
   return score;
@@ -1473,10 +1457,11 @@ function setElementBorderColour(id,col) {
 // matchable squares
 
 // generate random value and associated colour and picture for a square
-function generateRandomSquare(valDict,picDict) {
-  const val = randomValue(Object.keys(valDict));
-  const col = valDict[val];
-  const pic = picDict[val];
+function generateRandomSquare(o) {
+  const val = randomValue(Object.keys(o));
+  const valD = o[val];
+  const col = valD.colour;
+  const pic = valD.picture;
   return [val, col, pic];
 }
 
@@ -1492,14 +1477,15 @@ function setSquareVal(id,val) {
 }
 
 // generate random value and associated colour for a square - with restrictions
-function generateRestrictedSquare(valDict,picDict,rList) {
-  let valList = Object.keys(valDict);
+function generateRestrictedSquare(o,rList) {
+  let valList = Object.keys(o);
   for (let i = 0; i < rList.length; i++) {
     valList = removeListItem(valList,rList[i]);
   }
   const val = randomValue(valList);
-  const col = valDict[val];
-  const pic = picDict[val];
+  const valD = o[val];
+  const col = valD.colour;
+  const pic = valD.picture;
   return [val, col, pic];
 }
 
@@ -1611,4 +1597,20 @@ function objectVals(object) {
   const objectKeys = Object.keys(object);
   const objectVals = objectKeys.map(x => object[x]);
   return objectVals;
+}
+
+// object operations
+
+// makes and returns a level object
+function makeLevel(x,l) {
+  let level = {}
+  level.size = x;
+  level.squares = {};
+  for (let i = 0; i < l.length; i++) {
+    level.squares[l[i][0]] = {};
+    level.squares[l[i][0]].colour = l[i][1];
+    level.squares[l[i][0]].picture = l[i][2];
+    level.squares[l[i][0]].score = l[i][3];
+  }
+  return level;
 }

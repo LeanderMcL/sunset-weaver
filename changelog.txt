@@ -1,3 +1,5 @@
+05/08/19 -- Refactor to create a level object and use that instead of three independent dictionaries
+05/08/19 -- Refactor to call adjacentSquares many fewer times
 04/08/19 -- A first attempt at responsive text sizes - needs work
 04/08/19 -- Fixed the triple-scoring bug
 04/08/19 -- Some updates to the About and Dev News pages 
