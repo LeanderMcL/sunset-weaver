@@ -71,32 +71,10 @@ const gridSize = 8;
 
 const gameStatus = testing;
 
-/*const img = createImage('hi','hello','https://cdn.glitch.com/39da33ca-b9bc-4d91-87ff-6edf9dfb13fb%2Farmored-pants.png?1533503109479',45,45);
-
-const testButton = makeSquare('hi','hello',60,60);
-appendElement(testButton);
-setElementBGColour('hello','lightcoral');
-setElementVal('hello','<img src="https://cdn.glitch.com/39da33ca-b9bc-4d91-87ff-6edf9dfb13fb%2Farmored-pants.png?1533503109479" height="45" width="45">');*/
-
 // --- RUN THE GAME ---
 
 const screen = generateScreen(gameTitle,gameSubTitle,headerLinks,glitchButton);
 const grid = runGame(gridSize,squareValues,squareScores,squarePics,gameStatus);
-
-
-/*const testLink = buildLinkTag("dev-news.html","dev news");
-console.log(testLink);*/
-
-/*console.log(generateRandomSquare(squareValues,squarePics));
-console.log(generateRestrictedSquare(squareValues,squarePics,['X','C']));*/
-
-//console.log(buildImgTag("test.jpg",50,"testID"));
-
-/*console.log(getNumericId("pic0"));
-console.log(setSquareId(0));
-console.log(setPicId(0));*/
-
-//runTest(gridSize,squareValues,squareScores,gameStatus);
 
 // ---GENERATE THE BOARD---
 // note: makeGrid is going to change hugely once I set up matching
@@ -207,67 +185,8 @@ async function runGame(size,valDict,scoreDict,picDict,status) {
 
 async function runTest(size,valDict,scoreDict,status) {
   const grid = await runGame(size,valDict,scoreDict,status);
-  /*setElement(3,'B','white','green');
-  setElement(7,'Y','white','blue');
-  setElement(8,'X','white','red');
-  setElement(9,'Z','black','yellow');
-  setElement(12,'X','white','red');
-  setElement(13,'A','white','purple');
-  setElement(17,'A','white','purple');
-  setElement(18,'X','white','red');
-  setElement(23,'B','white','green');
-  const testMoving = testMove(8,size);
-  console.log(testMoving); // working so far!
-  const getMoves = testAllMoves(size);
-  console.log(getMoves);*/
-  /*const testList = [1,2,3,4,5];
-  const testNewList = removeListItem(testList,4);
-  console.log(testNewList); // should be [1,2,3,5];*/
-  /*setElement(1,'X','white','red');
-  setElement(9,'X','white','red');
-  setElement(13,'Y','white','blue');
-  setElement(14,'Y','white','blue');
-  const prevTwo = previousTwoMatch(17,size);
-  const prevTwo2 = previousTwoMatch(15,size);
-  console.log(prevTwo);
-  console.log(prevTwo2);*/
-  //const vals = objectVals(valDict);
-  //console.log(vals);
+  // something should go here, not sure what yet
 }
-
-/*console.log('hi, testing begins here');
-const testMatchTwo = twoSquareMatch(0,grid.size);
-console.log(testMatchTwo);
-const testMatchThree = twoSquareMatch(5,grid.size);
-console.log(testMatchThree);
-// okay so this works in principle which we knew because we're using it elsewhere
-// right now I need a function that grabs a list of all two-way matches
-// failure mode: first attempt, we're probably going to grab all matches of at least two
-// okay let's do some square-forcing and see if that happens
-// yup, right, cool
-// so now I have a match of at least two? oof this is hard. now what. going round in circles
-// so let's start with the obvious thing that is, I want a function that returns all my two-way matches that are only two-way
-
-console.log(allTwoSquareMatches(grid.size));*/
-
-// okay this isn't at all what I want yet
-// where is it that I turn my objects into match lists?
-
-//console.log(matchTwoToList(0,grid.size));
-
-/*click(0);
-let testClick = anyOtherSquareIsClicked(10,gridSize);
-console.log(testClick);*/
-
-/*console.log(getElementVal(0));
-console.log(getElementVal(1));
-const testSwap = squareSwapLag(0,1,squareValues,2000);
-console.log(getElementVal(0));
-console.log(getElementVal(1));*/
-
-/*let testParent = getElementParent(0);
-console.log(testParent);
-console.log(testParent.isClicky);*/
 
 // functions go here
 
@@ -315,9 +234,9 @@ function populateMatchlessGrid(grid,size,valDict,picDict) {
     let squareProps;
     if (prevTwo) {
       let prevTwoVals = objectVals(prevTwo);
-      squareProps = generateRestrictedSquare(valDict,picDict,prevTwoVals); // return [value, colour, pic]
+      squareProps = generateRestrictedSquare(valDict,picDict,prevTwoVals); // [value, colour, pic]
     } else {
-      squareProps = generateRandomSquare(valDict,picDict); // returns [value, colour, pic]
+      squareProps = generateRandomSquare(valDict,picDict); // [value, colour, pic]
     }
     const squareVal = squareProps[0];
     const imgUrl = squareProps[2];
@@ -325,7 +244,9 @@ function populateMatchlessGrid(grid,size,valDict,picDict) {
     const squarePic = buildImgTag(imgUrl,imgSize,picId);
     const squareColour = squareProps[1];
     const square = makeSquare('',squId,squareSize);
+    const nextSquares = adjacentSquares(squId,size); //grab the adjacent squares for this square
     square.val = squareVal;
+    square.adjacent = nextSquares; //make the adjacent squares a property of the square
     appendElement(square,grid);
     setElementVal(squId,squarePic);
     setElementColours(squId,squareColour,squareColour);
@@ -356,7 +277,6 @@ function makeScoreBoard(status) {
   setElementBGColour('scoreboard','lightsalmon');
   setElementColour('scoreboard','saddlebrown');
   // we'll make this context-dependent on the user's screen-size later
-  //positionElement('scoreboard',550,100);
   // TODO: make the scoreboard pretty somehow
   // make the divs for invidual elements
   const statusDiv = createDiv('status','status');
@@ -431,7 +351,7 @@ function squareRefill(id,size,valDict,picDict,picSize) {
       colourAbove = adjacentAbove(id,size);
       // now test if we have any colours above
       if (!colourAbove && colourAbove != 0) { // there are no colours above
-        let thisNewSquare = generateRandomSquare(valDict,picDict); // returns a list of [value, colour, pic]
+        let thisNewSquare = generateRandomSquare(valDict,picDict); // [value, colour, pic]
         let thisNewImgTag = buildImgTag(thisNewSquare[2],picSize,thisPicId);
         setElement(id,thisNewImgTag,thisNewSquare[1],thisNewSquare[1]); // set these to the existing square
         setSquareVal(id,thisNewSquare[0]);
@@ -448,7 +368,7 @@ function squareRefill(id,size,valDict,picDict,picSize) {
       let lastVoid = voidStack[voidStack.length-1];
       colourAbove = adjacentAbove(voidStack[voidStack.length-1],size); // get the colours above the top of the empty squares
       if (!colourAbove && colourAbove != 0) { // no colours above, we can just fill in this square
-        let thisNewSquare = generateRandomSquare(valDict,picDict); // [value, colour, picture]
+        let thisNewSquare = generateRandomSquare(valDict,picDict); // [value, colour, pic]
         let thisNewImgTag = buildImgTag(thisNewSquare[2],picSize,thisPicId);
         setElement(id,thisNewImgTag,thisNewSquare[1],thisNewSquare[1]);
         setSquareVal(id,thisNewSquare[0]);
@@ -495,7 +415,7 @@ function refillGridLag(size,valDict,picDict,lag) {
 function testMove(id,size) {
   let moves = []; // we'll return this if it's got anything in it
   const matched = twoSquareMatch(id,size); // gets any two-square matches relating to this square
-  const nextSquares = adjacentSquares(id,size);
+  const nextSquares = getNextSquares(id);
   // note: we're only running anything with this function after all matches have been cleared, so we'll never have three-way matches
   // we should probably double-check there's no three-way matches just for code hygiene/resuability or something, but that's FOR LATER
   if (matched) { // if our passed-in square has any two-way matches
@@ -505,7 +425,7 @@ function testMove(id,size) {
       let thisMatchedOpp = opposite(thisMatchedKey);
       let thisNextSquare = nextSquares[thisMatchedOpp]; // this is the unmatching square in the same direction as the match
       if (thisNextSquare) {
-        let thisNextNext = adjacentSquares(thisNextSquare,size); // the squares next door to this unmatching square
+        let thisNextNext = getNextSquares(thisNextSquare); // the squares next door to this unmatching square
         let thisNextNextKeys = Object.keys(thisNextNext);
         for (let j = 0; j < thisNextNextKeys.length; j++) { // now we iterate over the squares next to this matched square to look for matches
           let thisMoveKey = thisNextNextKeys[j];
@@ -531,7 +451,7 @@ function testMove(id,size) {
       let thisSquare = nextNextSquares[thisDirection];
       if (isMatch([id,thisSquare])) {
         let middleSquare = nextSquares[thisDirection];
-        let middleSquareNext = adjacentSquares(middleSquare,size);
+        let middleSquareNext = getNextSquares(middleSquare);
         let middleSquareNextKeys = Object.keys(middleSquareNext);
         for (let l = 0; l < middleSquareNextKeys.length; l++) {
           let thisMiddleDirection = middleSquareNextKeys[l];
@@ -658,7 +578,7 @@ async function handleClick(event) {
   unClickyGrid(size);
   if (!squareIsClicked(squId)) {
     click(squId);
-    const nextSquares = adjacentSquares(squId,size);
+    const nextSquares = getNextSquares(squId);
     const nextSquaresClicked = squaresAreClicked(nextSquares);
     if (nextSquaresClicked) {
       const swapSquare = nextSquaresClicked[0];
@@ -863,15 +783,22 @@ function adjacentSquares(id,size) {
   return adjacent;
 }
 
+// return the adjacent property of the a square passed in by its ID
+function getNextSquares(id) {
+  const square = getElement(id);
+  const next = square.adjacent;
+  return next;
+}
+
 // finds the next-but-one squares for a specific square
 function nextAdjacentSquares(id,size) {
   const nextNextSquares = {};
-  const nextSquares = adjacentSquares(id,size);
+  const nextSquares = getNextSquares(id);
   const nextSquaresKeys = Object.keys(nextSquares);
   for (let i = 0; i < nextSquaresKeys.length; i++) {
     let thisKey = nextSquaresKeys[i];
     let thisSquare = nextSquares[thisKey];
-    let nextNext = adjacentSquares(thisSquare,size);
+    let nextNext = getNextSquares(thisSquare);
     let nextNextKeys = Object.keys(nextNext);
     for (let j = 0; j < nextNextKeys.length; j++) {
       let thisNextKey = nextNextKeys[j];
@@ -1019,7 +946,7 @@ function previousTwoMatch(id,size) {
 
 // does a given square have any two-matches?
 function twoSquareMatch(id,size) {
-  const nextSquares = adjacentSquares(id,size); // adjacent squares to the square ID passed in
+  const nextSquares = getNextSquares(id); // adjacent squares to the square ID passed in
   const nextKeys = Object.keys(nextSquares); // keys of the squares dictionary
   let matched = false; // assume no matches
   const matches = {}; // empty dictionary of potential matches
@@ -1351,8 +1278,6 @@ async function runMatch(size,valDict,picDict,scoreDict) {
 
 // assign scores for a list of matches
 function assignScore(matchList,scoresDict) {
-  console.log("hit assign score");
-  console.log("matchList is", matchList);
   const scoreVal = getSquareVal(matchList[0]); // value of the first square in the list
   let score = scoresDict[scoreVal] * matchList.length;
   if (matchList.length === 4) {
@@ -1365,8 +1290,6 @@ function assignScore(matchList,scoresDict) {
 
 // assign scores for the entire nest of matches
 function assignTotalScore(matchNest,scoresDict) {
-  console.log("hit assign total score");
-  console.log("matchNest is", matchNest);
   let score = 0;
   for (let i = 0; i < matchNest.length; i++) {
     let addScore = assignScore(matchNest[i],scoresDict);
