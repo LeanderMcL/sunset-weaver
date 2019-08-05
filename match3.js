@@ -140,7 +140,6 @@ function generateLandscapeScreen(h,w,title,subTitle,headLinks,button) {
 }
 
 function generatePortraitScreen(h,w,title,subTitle,headLinks,button) {
-  // code goes here
   const headerHeight = Math.floor(h * 0.05);
   const titleHeight = Math.floor(h * 0.075);
   makeHeader(headerHeight,w,headLinks,button);
