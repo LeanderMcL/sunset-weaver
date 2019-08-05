@@ -166,8 +166,7 @@ function generatePortraitScreen(h,w,title,subTitle,headLinks,button) {
   setElementVal('gameSubTitle',subTitle);
 }
 
-function makeHeader(h,w,l,button) {
-  console.log(button);
+function makeHeader(h,w,l) {
   const headerDiv = createDiv('headerDiv','headerDiv',h,w);
   appendElement(headerDiv);
   const headerLinks = makeHeaderLinks(l);
@@ -175,7 +174,7 @@ function makeHeader(h,w,l,button) {
   for (let i = 0; i < headerLinks.length; i++) {
     headerContent = headerContent + " " + headerLinks[i];
   }
-  headerContent = headerContent + button;
+  headerContent = headerContent;
   setElementVal('headerDiv',headerContent);
   positionElement('headerDiv',0,0);
 }
@@ -295,7 +294,7 @@ function makeGrid(size,valDict,scoreDict,picDict) {
   const grid = createDiv('grid','grid',w,w);
   grid.size = size;
   grid.squSize = squareWidth;
-  grid.picSize = Math.floor(squareWidth * 0.75);
+  grid.picSize = Math.floor(squareWidth * 0.75); // to be determined based on screen size
   grid.isClicky = false;
   grid.vals = valDict;
   grid.scores = scoreDict;
