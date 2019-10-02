@@ -72,27 +72,6 @@ should
 3. MOBILE DISPLAY BUG
 ** responsiveness is not working on portrait-aligned phones
 
-LEVEL OBJECT THOUGHT
+TESTING
 
-Basically I need a thing that does this?
-
-level {
-  size: grid size goes here,
-  squares:
-    name: {
-      name: name,
-      colour: colour,
-      picture: picture,
-      score: score,
-    }
-    name2: {
-      name: name,
-      colour: colour,
-      picture: picture,
-      score: score,
-    }
-    name3: {
-      etc...
-    }
-}
-
+Now have test.html - we can build some tests there and use test.html to run them! Then put our generateScreen and runGame in index.html rather than in match3.js
