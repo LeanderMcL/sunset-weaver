@@ -1,27 +1,27 @@
 // ---IMAGES---
 
-const bindle = 'https://cdn.glitch.com/39da33ca-b9bc-4d91-87ff-6edf9dfb13fb%2Fbindle.png?1533504968919'
-const carnyx = 'https://cdn.glitch.com/39da33ca-b9bc-4d91-87ff-6edf9dfb13fb%2Fcarnyx.png?1533504814963'
-const elfhelm = 'https://cdn.glitch.com/39da33ca-b9bc-4d91-87ff-6edf9dfb13fb%2Felf-helmet.png?1533505125816'
-const flame = 'https://cdn.glitch.com/39da33ca-b9bc-4d91-87ff-6edf9dfb13fb%2Fflame.png?1533504553944'
-const hoodedfig = 'https://cdn.glitch.com/39da33ca-b9bc-4d91-87ff-6edf9dfb13fb%2Fhooded-figure.png?1533504843794'
-const nautilus = 'https://cdn.glitch.com/39da33ca-b9bc-4d91-87ff-6edf9dfb13fb%2Fnautilus-shell.png?1533505042707'
-const pants = 'https://cdn.glitch.com/39da33ca-b9bc-4d91-87ff-6edf9dfb13fb%2Farmored-pants.png?v=1533503109479'
-const oak = 'https://cdn.glitch.com/39da33ca-b9bc-4d91-87ff-6edf9dfb13fb%2Fholy-oak.png?v=1564872022232'
+const bindle = 'https://cdn.glitch.com/39da33ca-b9bc-4d91-87ff-6edf9dfb13fb%2Fbindle-small-white.png?v=1565366621659';
+const carnyx = 'https://cdn.glitch.com/39da33ca-b9bc-4d91-87ff-6edf9dfb13fb%2Fcarnyx-small-white.png?v=1565366632244';
+const elfHelm = 'https://cdn.glitch.com/39da33ca-b9bc-4d91-87ff-6edf9dfb13fb%2Felf-helmet-small-white.png?v=1565366639922';
+const flame = 'https://cdn.glitch.com/39da33ca-b9bc-4d91-87ff-6edf9dfb13fb%2Fflame-small-white.png?v=1565366646487';
+const hoodedFig = 'https://cdn.glitch.com/39da33ca-b9bc-4d91-87ff-6edf9dfb13fb%2Fhooded-figure-small-white.png?v=1565366667707';
+const nautilus= 'https://cdn.glitch.com/39da33ca-b9bc-4d91-87ff-6edf9dfb13fb%2Fnautilus-shell-small-white.png?v=1565366674605';
+const pants = 'https://cdn.glitch.com/39da33ca-b9bc-4d91-87ff-6edf9dfb13fb%2Farmored-pants-small-white.png?v=1565366613547';
+const oak = 'https://cdn.glitch.com/39da33ca-b9bc-4d91-87ff-6edf9dfb13fb%2Fholy-oak-small-white.png?v=1565366657034';
 
 // ---SET UP THE PARAMETERS OF THE GRID---
 
 // our starting level
 
-const level1 = makeLevel(8,[
-  ['flame', 'crimson', flame,1], 
+const level1 = makeLevel(10 ,10,[
+  ['flame', 'crimson', flame, 1], 
   ['carnyx', 'darkturquoise', carnyx, 2], 
-  ['hoodedfig', 'gold', hoodedfig, 3], 
+  ['hoodedfig', 'gold', hoodedFig, 3], 
   ['bindle', 'darkorange', bindle, 4], 
-  ['nautilus', 'darkseagreen', nautilus, 5], 
-  ['elfhelm', 'purple', elfhelm, 6], 
-  ['pants', 'teal', pants, 7], 
-  ['oak', 'forestgreen', oak, 8]
+  ['nautilus', 'hotpink', nautilus, 5], 
+  ['elfhelm', 'purple', elfHelm, 6], 
+  ['oak', 'forestgreen', oak, 7],
+  ['pants', 'royalblue', pants, 8]
 ]);
 
 // scoring
@@ -45,17 +45,65 @@ const headerLinks = [["index.html","play!"],["dev-news.html","dev news"],["about
 
 const glitchButton = '<div class="glitchButton" style="position:fixed;top:20px;right:20px;"></div><script src="https://button.glitch.me/button.js"></script>';
 
-// note: later on we'll dynamically generate the size of the grid depending on what level we're playing? but that's for way later
-// for now this is a static 8x8 grid
-
-const gridSize = 8;
-
 const gameStatus = working;
 
 // --- RUN THE GAME ---
 
 const screen = generateScreen(gameTitle,gameSubTitle,headerLinks);
 const grid = runGame(level1,gameStatus);
+
+
+// --- SQUARE AND GRID GENERATION --
+// okay we're pausing here to try and implement some stuff in a way that doesn't break the game
+// let's start with pushing this, then we'll try to take out the size attribute and use height/width
+
+function generateSquare(id,valList,adjObj) { // valList = [name, colour, pic]; adjObj = {"above": 0}
+  return {
+    "id": id,
+    "name": valList[0],
+    "colour": valList[1],
+    "pic": valList[2],
+    "adjacent": adjObj
+  }
+}
+
+// can we do better here? maybe, hmm
+// need a working keyboard, omg
+
+function makeRandomSquare(id,level,rlist=null) {
+  let randomSquareVals = [];
+  if (rlist) {
+    randomSquareVals = generateRestrictedSquare(level.squares,rlist);
+  } else {
+    randomSquareVals = generateRandomSquare(level.squares);
+  }
+  const adjacent = adjacentSquares(id,level.width);
+  return generateSquare(id,randomSquareVals,adjacent);
+}
+
+function generateGrid(level) {
+  // stuff goes here
+  let grid = [];
+  let i = 0;
+  for (let j = 0; j < level.height; j++) {
+    // computation goes here
+    for (let k = 0; k < level.width; k++) {
+      let square = makeRandomSquare(i,level);
+      grid.push(square);
+      i++;
+    }
+  }
+  return grid;
+}
+
+// fuck
+// to make this work properly, I need to decouple matching from the DOM, which is gonna be HARD
+// either that or replicate it somewhere else, which is clunky and stupid
+// so I should - hmm, what? - find a way to do matching that doesn't rely on constantly getting the data from the squares
+// 
+
+// okay let's start here: don't we have adajacent squares stored in the square object now?
+// we should keep THAT up 
 
 // ---GENERATE THE BOARD---
 // note: makeGrid is going to change hugely once I set up matching
@@ -130,9 +178,9 @@ function makeHeader(h,w,l) {
   const headerDiv = createDiv('headerDiv','headerDiv',h,w);
   appendElement(headerDiv);
   const headerLinks = makeHeaderLinks(l);
-  let headerContent = "";
+  let headerContent;
   for (let i = 0; i < headerLinks.length; i++) {
-    headerContent = headerContent + " " + headerLinks[i];
+    headerContent = headerContent + ' ' + headerLinks[i];
   }
   headerContent = headerContent;
   setElementVal('headerDiv',headerContent);
@@ -289,9 +337,9 @@ function makeScoreBoard(status) {
   appendElement(lvlScoreFigSpan,lvlScoreDiv);
   const gameOverSpan = createElement('span','game over span','game over span');
   appendElement(gameOverSpan,gameOverDiv);
-  const newLevelButton = createButton('interface button','restart button','Restart');
+  const newLevelButton = createButton('interfaceButton','restartButton','Restart');
   appendElement(newLevelButton,newLevelDiv);
-  clickyRestart('restart button');
+  clickyRestart('restartButton');
   // set up the values of our score spans
   setElementVal('status label','Status: ');
   setElementVal('status text',status);
@@ -500,6 +548,7 @@ function testGameOver(size) {
 function updateGameOver() {
   const grid = getElement('grid');
   const size = grid.level.size;
+  const newLevelDiv = getElement('restart');
   unClickyGrid(size);
   setElement('game over span','GAME OVER','red','white');
 }
@@ -568,11 +617,11 @@ async function handleClick(event) {
     if (nextSquaresClicked) {
       const swapSquare = nextSquaresClicked[0];
       // now I need to swap squares which is probably its own function
-      const swapIn = await squareSwapLag(squId,swapSquare,squares,500);
+      const swapIn = await squareSwapLag(squId,swapSquare,squares,400);
       const firstMatch = squareMatch(squId,size);
       const secondMatch = squareMatch(swapSquare,size);
       if (!firstMatch && !secondMatch) { // no matches is made by this swap
-        const swapBack = await squareSwapLag(squId,swapSquare,squares,500);
+        const swapBack = await squareSwapLag(squId,swapSquare,squares,400);
         unClick(squId);
         unClick(swapSquare);
         clickyGrid();
@@ -584,7 +633,7 @@ async function handleClick(event) {
       }
       clearAllClicked(size);
     } else if (anyOtherSquareIsClicked(squId,size)) {
-      const clear = await clearAllClickedLag(size,500);
+      const clear = await clearAllClickedLag(size,400);
       clickyGrid();
     } else {
       clickyGrid();
@@ -618,7 +667,7 @@ function click(id) {
 function unClick(id) {
   const square = getElement(id);
   square.clicked = false;
-  setElementBorderColour(id,'grey');
+  setElementBorderColour(id,'gray');
 }
 
 // tests if a square is clicked
@@ -744,6 +793,7 @@ function squareSwapLag(id1,id2,squares,lag) {
 // find adjacent squares
 
 // return a dictionary of a specified square's adjacent squares
+// NOTE: want to edit the below functions to change what they return, see github
 function adjacentSquares(id,size) {
   const adjacent = {};
   const thisAbove = adjacentAbove(id,size);
@@ -796,7 +846,12 @@ function nextAdjacentSquares(id,size) {
 
 // return the id of the square above
 function adjacentAbove(id,size) {
-  const idNo = getNumericId(id);
+  let idNo;
+  if (typeof id == 'number') {
+    idNo = id;
+  } else {
+    idNo = getNumericId(id);
+  }
     if (idNo - size < 0) {
     // top row
     return null;
@@ -808,7 +863,12 @@ function adjacentAbove(id,size) {
 
 // return the id of the square below
 function adjacentBelow(id,size) {
-  const idNo = getNumericId(id);
+  let idNo;
+  if (typeof id == 'number') {
+    idNo = id;
+  } else {
+    idNo = getNumericId(id);
+  }
   if (idNo + size >= size*size) {
     // bottom row
     return null;
@@ -820,7 +880,12 @@ function adjacentBelow(id,size) {
 
 // return the id of the square to the left
 function adjacentLeft(id,size) {
-  const idNo = getNumericId(id);
+  let idNo;
+  if (typeof id == 'number') {
+    idNo = id;
+  } else {
+    idNo = getNumericId(id);
+  }
   if (idNo == 0 || idNo % size == 0) {
     // start of line
     return null;
@@ -832,7 +897,12 @@ function adjacentLeft(id,size) {
 
 // return the id of the square to the right
 function adjacentRight(id,size) {
-  const idNo = getNumericId(id);
+  let idNo;
+  if (typeof id == 'number') {
+    idNo = id;
+  } else {
+    idNo = getNumericId(id);
+  }
   if ((idNo+1) % size == 0) {
     // end of line
     return null;
@@ -1225,9 +1295,9 @@ async function matchHandler(nest,matches) { // not using the dicts here either
   const score = assignTotalScore(nest); // fix this shit up -- SCORING
   const lScore = Number(getElementVal('level score figure'));
   const tScore = Number(getElementVal('total score figure'));
-  const makeEmptyGrid = await emptyGridLag(matches,500);
+  const makeEmptyGrid = await emptyGridLag(matches,400);
   updateScore(score,lScore,tScore);
-  const makeRefillGrid = await refillGridLag(500);
+  const makeRefillGrid = await refillGridLag(400);
   return true;
 }
 
@@ -1246,7 +1316,7 @@ async function runMatch(size) { // no need for this shit here
   if (match) {
     const matchNest = match[0];
     const matchList = match[1];
-    const handledMatch = await(matchHandlerLag(matchNest,matchList,500));
+    const handledMatch = await(matchHandlerLag(matchNest,matchList,400));
     const reRunMatch = await(runMatch(size));
   }
   if (testGameOver(size)) {
@@ -1471,6 +1541,7 @@ function getSquareVal(id) {
   return square.val;
 }
 
+// set the val property of a square
 function setSquareVal(id,val) {
   const square = getElement(id);
   square.val = val;
@@ -1602,9 +1673,11 @@ function objectVals(object) {
 // object operations
 
 // makes and returns a level object
-function makeLevel(x,l) {
+function makeLevel(x,y,l) {
   let level = {}
-  level.size = x;
+  level.height = x;
+  level.width = y;
+  level.size = x; // this is just so the current code doesn't break and needs to be removed later
   level.squares = {};
   for (let i = 0; i < l.length; i++) {
     level.squares[l[i][0]] = {};
